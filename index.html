@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Schedule</title>
+    <title>JT 行事曆</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -13,76 +13,37 @@
             max-width: 800px;
             margin: auto;
         }
-        .event {
+        .calendar-container {
+            position: relative;
+            padding-bottom: 75%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            background: #f9f9f9;
             border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
             border-radius: 5px;
+            margin-top: 20px;
         }
-        .event h5 {
-            margin-bottom: 5px;
-        }
-        .event p {
-            margin: 0;
+        .calendar-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1 class="text-center">My Schedule</h1>
-        <div id="calendar-events"></div>
+        <h1 class="text-center">行事曆</h1>
+        <h6 class="text-center">有事寄信</h6>
+        <h6 class="text-center">gjt.cs13@nycu.edu.tw</h6>
+        <div class="calendar-container">
+            <iframe src="https://calendar.google.com/calendar/embed?src=gjt.cs13%40nycu.edu.tw&ctz=Asia%2FTaipei" frameborder="0" scrolling="no"></iframe>
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script>
-        function handleClientLoad() {
-            gapi.load('client', initClient);
-        }
-
-        function initClient() {
-            gapi.client.init({
-                apiKey: 'YOUR_API_KEY', // Replace with your API key
-                discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-            }).then(function () {
-                loadCalendarEvents();
-            });
-        }
-
-        function loadCalendarEvents() {
-            gapi.client.calendar.events.list({
-                'calendarId': 'primary',
-                'timeMin': (new Date()).toISOString(),
-                'showDeleted': false,
-                'singleEvents': true,
-                'maxResults': 10,
-                'orderBy': 'startTime'
-            }).then(function(response) {
-                var events = response.result.items;
-                var calendarEvents = $('#calendar-events');
-                if (events.length > 0) {
-                    events.forEach(function(event) {
-                        var start = event.start.dateTime || event.start.date;
-                        var end = event.end.dateTime || event.end.date;
-                        var eventElement = `
-                            <div class="event">
-                                <h5>${event.summary}</h5>
-                                <p><strong>Start:</strong> ${start}</p>
-                                <p><strong>End:</strong> ${end}</p>
-                            </div>
-                        `;
-                        calendarEvents.append(eventElement);
-                    });
-                } else {
-                    calendarEvents.append('<p>No upcoming events found.</p>');
-                }
-            });
-        }
-
-        $(document).ready(function() {
-            handleClientLoad();
-        });
-    </script>
 </body>
 </html>
