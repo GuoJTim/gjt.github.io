@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Schedule</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .event {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .event h5 {
+            margin-bottom: 5px;
+        }
+        .event p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="text-center">My Schedule</h1>
+        <div id="calendar-events"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        function handleClientLoad() {
+            gapi.load('client', initClient);
+        }
+
+        function initClient() {
+            gapi.client.init({
+                apiKey: 'YOUR_API_KEY', // Replace with your API key
+                discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+            }).then(function () {
+                loadCalendarEvents();
+            });
+        }
+
+        function loadCalendarEvents() {
+            gapi.client.calendar.events.list({
+                'calendarId': 'primary',
+                'timeMin': (new Date()).toISOString(),
+                'showDeleted': false,
+                'singleEvents': true,
+                'maxResults': 10,
+                'orderBy': 'startTime'
+            }).then(function(response) {
+                var events = response.result.items;
+                var calendarEvents = $('#calendar-events');
+                if (events.length > 0) {
+                    events.forEach(function(event) {
+                        var start = event.start.dateTime || event.start.date;
+                        var end = event.end.dateTime || event.end.date;
+                        var eventElement = `
+                            <div class="event">
+                                <h5>${event.summary}</h5>
+                                <p><strong>Start:</strong> ${start}</p>
+                                <p><strong>End:</strong> ${end}</p>
+                            </div>
+                        `;
+                        calendarEvents.append(eventElement);
+                    });
+                } else {
+                    calendarEvents.append('<p>No upcoming events found.</p>');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            handleClientLoad();
+        });
+    </script>
+</body>
+</html>
